@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Employee Directory</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+
+  <body>
+    <h1>Employee Directory</h1>
+
+    <form action="/add" method="POST">
+      <input type="text" name="name" placeholder="Employee Name" required />
+      <button>Add Employee</button>
+    </form>
+
+    <hr />
+    <ul>
+      {% for employee in employees %}
+      <li>
+        {{ employee[1] }}
+        <a href="/delete/{{ employee[0] }}">Delete</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
