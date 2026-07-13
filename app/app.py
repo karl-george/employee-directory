@@ -1,59 +1,88 @@
-from flask import Flask, render_template, request, redirect
+from pathlib import Path
 import sqlite3
+
+from flask import Flask, redirect, render_template, request, url_for
+
+
+BASE_DIR = Path(__file__).resolve().parent
+DATABASE = BASE_DIR / "employees.db"
 
 app = Flask(__name__)
 
-DATABASE = "employees.db"
 
-def init_db():
-    conn = sqlite3.connect(DATABASE)
-    cur = conn.cursor()
+def get_db_connection() -> sqlite3.Connection:
+    connection = sqlite3.connect(DATABASE)
+    connection.row_factory = sqlite3.Row
+    return connection
 
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS employees(
+
+def init_db() -> None:
+    connection = get_db_connection()
+
+    connection.execute(
+        """
+        CREATE TABLE IF NOT EXISTS employees (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL
         )
-    """)
+        """
+    )
 
-    conn.commit()
-    conn.close()
+    connection.commit()
+    connection.close()
 
-@app.route('/')
+
+@app.route("/")
 def index():
-    conn = sqlite3.connect(DATABASE)
-    cur = conn.cursor()
+    connection = get_db_connection()
 
-    cur.execute("SELECT * FROM employees")
-    employees = cur.fetchall()
+    employees = connection.execute(
+        "SELECT id, name FROM employees ORDER BY id"
+    ).fetchall()
 
-    conn.close()
-    return render_template('index.html', employees=employees)
+    connection.close()
 
-@app.route('/add', methods=['POST'])
+    return render_template("index.html", employees=employees)
+
+
+@app.route("/add", methods=["POST"])
 def add_employee():
-    name = request.form['name']
+    name = request.form.get("name", "").strip()
 
-    conn = sqlite3.connect(DATABASE)
-    cur = conn.cursor()
+    if name:
+        connection = get_db_connection()
 
-    cur.execute("INSERT INTO employees (name) VALUES (?)", (name,))
-    conn.commit()
-    
-    conn.close()
-    return redirect('/')
+        connection.execute(
+            "INSERT INTO employees (name) VALUES (?)",
+            (name,),
+        )
 
-@app.route('/delete/<int:id>')
-def delete_employee(id):
-    conn = sqlite3.connect(DATABASE)
-    cur = conn.cursor()
+        connection.commit()
+        connection.close()
 
-    cur.execute("DELETE FROM employees WHERE id=?", (id,))
-    conn.commit()
-    
-    conn.close()
-    return redirect('/')
+    return redirect(url_for("index"))
 
-if __name__ == '__main__':
+
+@app.route("/delete/<int:employee_id>", methods=["POST"])
+def delete_employee(employee_id: int):
+    connection = get_db_connection()
+
+    connection.execute(
+        "DELETE FROM employees WHERE id = ?",
+        (employee_id,),
+    )
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("index"))
+
+
+@app.route("/health")
+def health():
+    return {"status": "healthy"}, 200
+
+
+if __name__ == "__main__":
     init_db()
     app.run(debug=True)
