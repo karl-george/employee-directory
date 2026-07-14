@@ -1,0 +1,52 @@
+---
+name: Application CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    branches:
+      - main
+      - develop
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: application-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Pytest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: |
+            app/requirements.txt
+            app/requirements-test.txt
+
+      - name: Upgrade Pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install test dependencies
+        run: python -m pip install -r app/requirements-test.txt
+
+      - name: Run pytest
+        env:
+          DEPLOYMENT_ENVIRONMENT: testing
+        run: python -m pytest -v
