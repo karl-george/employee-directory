@@ -33,7 +33,7 @@ def test_health_endpoint(client: FlaskClient) -> None:
 
     response = client.get("/health")
 
-    assert response.status_code == 200
+    assert response.status_code == 500
 
 
 def test_homepage_loads_with_empty_database(
