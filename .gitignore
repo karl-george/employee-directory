@@ -1,7 +1,27 @@
+# Python bytecode
 __pycache__/
 *.pyc
+*.py[cod]
+
+# Virtual Enviroments
+venv/
+.venv/
+
+# Environment Variables
 .env
 .env.*
+
+# SQLite Databases
+*.db
+*.db-journal
+.sqlite
+.sqlite3
+
+# Logs
+.log
+
+# Editors
 .vscode/
-venv/
-employees.db
+
+# Temporary Files
+*~
