@@ -1,5 +1,6 @@
 from pathlib import Path
 import sqlite3
+import os
 
 from flask import Flask, redirect, render_template, request, url_for
 
@@ -80,7 +81,11 @@ def delete_employee(employee_id: int):
 
 @app.route("/health")
 def health():
-    return {"status": "healthy"}, 200
+    environment = os.getenv("DEPLOYMENT_ENVIRONMENT", "development")
+    return {
+        "status": "healthy",
+        "environment": environment,
+    }, 200
 
 
 if __name__ == "__main__":
