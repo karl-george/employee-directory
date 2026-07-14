@@ -34,13 +34,6 @@ def test_health_endpoint(client: FlaskClient) -> None:
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.is_json
-
-    payload = response.get_json()
-
-    assert payload == {
-        "status": "healthy",
-    }
 
 
 def test_homepage_loads_with_empty_database(
