@@ -16,6 +16,10 @@ app.config.from_mapping(
         "DEPLOYMENT_ENVIRONMENT",
         "development",
     ),
+    SECRET_KEY=os.getenv(
+        "FLASK_SECRET_KEY",
+        "development-only-secret-key"
+    )
 )
 
 def get_db_connection() -> Connection:

@@ -148,3 +148,9 @@ def test_delete_rejects_get_request(
     response = client.get("/delete/1")
 
     assert response.status_code == 405
+
+def test_application_uses_test_secret(app) -> None:
+    """The test application must use an isolated test-only secret"""
+
+    assert app.config["SECRET_KEY"] == "testing-only-secret-key"
+    assert app.config["SECRET_KEY"] != "development-only-secret-key"
