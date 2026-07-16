@@ -24,11 +24,13 @@ def app(tmp_path: Path) -> Generator(Flask, None, None):
 
     original_database = employee_app.config["DATABASE"]
     original_environment = employee_app.config["DEPLOYMENT_ENVIRONMENT"]
+    original_secret_key = employee_app.config["SECRET_KEY"]
 
     employee_app.config.update(
         TESTING=True,
         DATABASE=str(test_database),
-        DEPLOYMENT_ENVIRONMENT="testing"
+        DEPLOYMENT_ENVIRONMENT="testing",
+        SECRET_KEY="testing-only-secret-key"
     )
 
     init_db()
@@ -38,6 +40,7 @@ def app(tmp_path: Path) -> Generator(Flask, None, None):
     employee_app.config.update(
         DATABASE=original_database,
         DEPLOYMENT_ENVIRONMENT=original_environment,
+        SECRET_KEY=original_secret_key,
         TESTING=False
     )
 
