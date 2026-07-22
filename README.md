@@ -155,3 +155,5 @@ That repository contains:
 4. Build a new Docker image.
 5. Publish the image to GitHub Container Registry.
 6. Update the Kubernetes Deployment to use the new image version.
+
+---
