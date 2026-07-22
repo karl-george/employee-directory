@@ -13,11 +13,11 @@ APPLICATION_DIRECTORY = ( Path(__file__).resolve().parents[1] / "app" )
 if str(APPLICATION_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(APPLICATION_DIRECTORY))
     
-from app import app as employee_app
-from app import init_db
+from app.app import app as employee_app
+from app.app import init_db
 
 @pytest.fixture()
-def app(tmp_path: Path) -> Generator(Flask, None, None):
+def app(tmp_path: Path) -> Generator[Flask, None, None]:
     """Provide a Flask application using an isolated driver"""
     
     test_database = tmp_path / "test-employees.db"
